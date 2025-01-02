@@ -123,7 +123,7 @@ export default {
 
 <template>
     <div class="wrapper">
-        <img src="../../assets/dtt/img_background.png" class="background">
+        <img src="../../assets/images/img_background.png" class="background">
         <div class="back">
             <div class="mobile-back">
                 <router-link class="back-class" @click="$router.go(-1)" to="">

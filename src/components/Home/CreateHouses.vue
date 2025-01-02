@@ -86,8 +86,7 @@ export default {
         .catch((error) => {
             console.error('Error posting house:', error);
             alert('An error occurred while posting the house.');
-        });
-}
+        });},
 
 
 
