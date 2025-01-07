@@ -94,7 +94,7 @@ export default {
                 <img class="back-button" src="../../assets/images/ic_back_grey.png" alt="back">
                 <a class="back-text">Back to overview</a>
             </router-link>
-            <router-link class="mobile-back-class" to="/">
+            <router-link class="mobile-back-class" to="/houses">
                 <img class="mobile-back-button" src="../../assets/images/ic_back_white.png" alt="back">
             </router-link>
 
