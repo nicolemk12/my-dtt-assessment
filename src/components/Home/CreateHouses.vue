@@ -86,7 +86,13 @@ export default {
         .catch((error) => {
             console.error('Error posting house:', error);
             alert('An error occurred while posting the house.');
-        });},
+            
+        })
+        
+        .catch((error) => {
+        console.error('Error posting house:', error);
+        console.error('Form Data:', formData); // Log the form data
+    });;},
 
 
 

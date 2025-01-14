@@ -151,7 +151,9 @@ export const useStoreHouse = defineStore({
         
             try {
                 const response = await fetch("https://api.intern.d-tt.nl/api/houses", requestOptions);
+                console.log('Response:', response); // Log the response
                 const data = await response.json();
+                console.log('Data:', data); // Log the data
                 if (response.ok) {
                     return data;
                 } else {
@@ -159,12 +161,14 @@ export const useStoreHouse = defineStore({
                 }
             } catch (error) {
                 console.error('Error posting house:', error);
+                console.error('Request Options:', requestOptions); // Log the request options
+                console.error('Form Data:', formData); // Log the form data
                 throw error;
             }
         }
-        
         }
-    });     
+        
+        });     
 
 export const useUpdateImage = defineStore({
     id: 'updateImage',
