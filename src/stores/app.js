@@ -46,25 +46,10 @@ export const useHousesStore = defineStore({
         },
         getHouses() {
             fetch("https://api.intern.d-tt.nl/api/houses", requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch houses');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!Array.isArray(data)) {
-                        throw new Error('Unexpected response format');
-                    }
-                    this.houses = data;
-                    this.sortHousesByPrice();
-                })
-                .catch(error => {
-                    console.error('Error fetching houses:', error);
-                    this.houses = []; // Ensure houses is at least an empty array
-                });
-        }
-        
+                .then(response => response.json())
+                .then(data => this.houses = data)
+                .then(this.sortHousesByPrice)
+        },
     }
 })
 
@@ -137,38 +122,59 @@ export const useStoreHouse = defineStore({
         id: '',
     }),
     actions: {
-        
-        async postHouses(formData) {
-            const myHeaders = new Headers();
-            myHeaders.append("X-Api-Key", "Jux6fCtiNcIGOMpEynFSbKz1TWv3PQR7");
-        
+        async postHouses(newPost, image) {
+            var formdata = new FormData();
+            formdata.append('price', newPost.price);
+            formdata.append('bedrooms', newPost.bedrooms);
+            formdata.append('bathrooms', newPost.bathrooms);
+            formdata.append('size', newPost.size);
+            formdata.append('streetName', newPost.streetName);
+            formdata.append('houseNumber', newPost.houseNumber);
+            formdata.append('numberAddition', newPost.numberAddition);
+            formdata.append('zip', newPost.zip);
+            formdata.append('city', newPost.city);
+            formdata.append('constructionYear', newPost.constructionYear);
+            formdata.append('hasGarage', newPost.hasGarage);
+            formdata.append('description', newPost.description);
+            formdata.append('image', image, "house.jpg");
+
+
             const requestOptions = {
                 method: 'POST',
-                headers: myHeaders,  // Do not manually set Content-Type here
-                body: formData,      // This is the FormData you send
+                headers: myHeaders,
+                body: formdata,
                 redirect: 'follow'
             };
-        
-            try {
-                const response = await fetch("https://api.intern.d-tt.nl/api/houses", requestOptions);
-                console.log('Response:', response); // Log the response
-                const data = await response.json();
-                console.log('Data:', data); // Log the data
-                if (response.ok) {
-                    return data;
-                } else {
-                    throw new Error(`Error: ${response.status} - ${data.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error posting house:', error);
-                console.error('Request Options:', requestOptions); // Log the request options
-                console.error('Form Data:', formData); // Log the form data
-                throw error;
-            }
+
+            return await fetch("https://api.intern.d-tt.nl/api/houses", requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    const id = data.id;
+                    this.id = data.id;
+                    const imageFormData = new FormData();
+                    imageFormData.append("image", image, "house.jpg");
+                    const imageRequestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: imageFormData,
+                        redirect: 'follow'
+                    };
+
+                    return fetch(`https://api.intern.d-tt.nl/api/houses/${id}/upload`, imageRequestOptions)
+                        .then((respone) => {
+                            if (!respone.ok) {
+                                throw new Error(respone.statusText);
+                            }
+                            return respone.json();
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                })
+                .catch(error => console.log('error', error));
         }
-        }
-        
-        });     
+    },
+})
 
 export const useUpdateImage = defineStore({
     id: 'updateImage',

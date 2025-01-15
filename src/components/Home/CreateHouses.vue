@@ -41,78 +41,33 @@ export default {
             document.getElementById('image').value = '';
         },
 
-
         addHouse() {
-    const houseStore = useStoreHouse();
+            const houseStore = useStoreHouse();
+            houseStore.postHouses(this.newHouse, this.image)
+                .then(() => {
+                    this.$router.push(`/houses/detail/${this.id}`);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
 
-    // Ensure the image is not null or undefined
-    if (!this.image) {
-        alert('Please upload an image.');
-        return;
-    }
-
-    const formData = new FormData();
-
-    // Append the house fields to formData
-    formData.append('price', this.newHouse.price);
-    formData.append('bedrooms', this.newHouse.bedrooms);
-    formData.append('bathrooms', this.newHouse.bathrooms);
-    formData.append('size', this.newHouse.size);
-    formData.append('streetName', this.newHouse.streetName);
-    formData.append('houseNumber', this.newHouse.houseNumber);
-    formData.append('city', this.newHouse.city);
-    formData.append('zip', this.newHouse.zip);
-    formData.append('numberAddition', this.newHouse.numberAddition || '');
-    formData.append('constructionYear', this.newHouse.constructionYear);
-    formData.append('hasGarage', this.newHouse.hasGarage);
-    formData.append('description', this.newHouse.description);
-    formData.append('image', this.image);
-
-    // Log to check
-    console.log("FormData to be sent:", formData);
-
-    houseStore.postHouses(formData)
-        .then((response) => {
-            // If successful, navigate to the details page or reload the house list
-            if (response && response.id) {
-                this.$router.push(`/houses/detail/${response.id}`); // Navigate to details page
-                // Optionally, reload the list of houses or trigger a refresh
-                this.$router.go(0);  // Force page reload to fetch new data
-            } else {
-                console.error('No ID returned by the server.');
-                alert('Failed to post the house. Please try again.');
-            }
-        })
-        .catch((error) => {
-            console.error('Error posting house:', error);
-            alert('An error occurred while posting the house.');
-            
-        })
-        
-        .catch((error) => {
-        console.error('Error posting house:', error);
-        console.error('Form Data:', formData); // Log the form data
-    });;},
-
-
-
-
-    isButtonDisabled() {
-        return (
-            !this.newHouse.price ||
-            !this.newHouse.bedrooms ||
-            !this.newHouse.bathrooms ||
-            !this.newHouse.size ||
-            !this.newHouse.streetName ||
-            !this.newHouse.houseNumber ||
-            !this.newHouse.city ||
-            !this.newHouse.zip ||
-            !this.newHouse.constructionYear ||
-            this.newHouse.hasGarage === '' ||
-            !this.newHouse.description ||
-            !this.image
-        );
-    }
+        isButtonDisabled() {
+            return (
+                this.newHouse.price === '' ||
+                this.newHouse.bedrooms === '' ||
+                this.newHouse.bathrooms === '' ||
+                this.newHouse.size === '' ||
+                this.newHouse.streetName === '' ||
+                this.newHouse.houseNumber === '' ||
+                this.newHouse.city === '' ||
+                this.newHouse.zip === '' ||
+                this.newHouse.constructionYear === '' ||
+                this.newHouse.hasGarage === '' ||
+                this.newHouse.description === '' ||
+                this.image === null
+            );
+        },
     },
 }
 
