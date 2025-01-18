@@ -1,44 +1,52 @@
 <script>
-import { useHousesStore } from '@/stores/app.js';
-import { useRoute } from 'vue-router';
-import { computed, watch, ref } from 'vue';
+import { useHousesStore } from '@/stores/app.js'; 
+import { useRoute } from 'vue-router'; 
+import { computed, watch, ref } from 'vue'; 
 
 export default {
     setup() {
-        const storeHouses = useHousesStore();
-        const router = useRoute();
-        const id = router.params.id;
+        const storeHouses = useHousesStore(); // Initialize the house store.
+        const router = useRoute(); // Access the current route.
+        const id = router.params.id; // Get the house ID from the route parameters.
 
-
+        // Deletes a house by ID using the store's delete action.
         const deleteHouse = (id) => {
             storeHouses.deleteHouse(id);
         };
 
+        // Fetches the list of all houses from the API.
         const getHouses = () => {
             storeHouses.getHouses();
         };
 
+        // Retrieves the details of the house matching the current ID.
         const house = computed(() => {
             return storeHouses.houses.find(house => house.id.toString() === id.toString());
         });
 
+        // Provides access to the full list of houses from the store.
         const houses = computed(() => {
             return storeHouses.houses;
         });
 
+        // Computes a list of recommended houses based on the current house.
         const recommendedHouses = computed(() => {
             const index = houses.value.findIndex(house => house.id.toString() === id.toString());
             const nextThreeHouses = houses.value.slice(index + 1, index + 4);
             if (nextThreeHouses.length < 3) {
+                // Ensures there are always three recommended houses.
                 const firstThreeHouses = houses.value.slice(0, 3);
                 return nextThreeHouses.concat(firstThreeHouses);
             }
             return nextThreeHouses;
         });
 
+        // Opens a delete confirmation popup for the selected house.
         const deletePopup = (id) => {
             const popup = document.getElementById('popup');
             popup.style.display = 'flex';
+
+            // Adds event listeners for the confirmation buttons.
             const yes = document.getElementById('yes');
             yes.addEventListener('click', () => {
                 deleteHouse(id);
@@ -50,13 +58,12 @@ export default {
             });
         };
 
+        // Watches for route changes to update the current house ID and reload the page.
         const houseId = ref(router.params.id);
-
         watch(() => router.params.id, (newId) => {
             houseId.value = newId;
             window.location.reload();
-    });
-
+        });
 
         return {
             getHouses,
@@ -69,15 +76,17 @@ export default {
         };
     },
 
+    // Fetches the list of houses when the component is created.
     created() {
         this.getHouses();
     },
-}
-
+};
 </script>
 
 <template>
+    <!-- Wrapper for house details -->
     <div class="wrapper" v-if="house">
+        <!-- Delete confirmation popup -->
         <div class="popup" id="popup">
             <div class="popup-content">
                 <a class="headertext">Delete Listing</a>
@@ -89,6 +98,8 @@ export default {
                 </div>
             </div>
         </div>
+
+        <!-- Navigation back to overview -->
         <div class="back">
             <router-link class="back-class" to="/houses">
                 <img class="back-button" src="../../assets/images/ic_back_grey.png" alt="back">
@@ -98,6 +109,7 @@ export default {
                 <img class="mobile-back-button" src="../../assets/images/ic_back_white.png" alt="back">
             </router-link>
 
+            <!-- Edit and delete options for houses created by the current user -->
             <div class="mobile-edits" v-if="house.madeByMe">
                 <router-link :to="`/edit-house/${house.id}`">
                     <img class="mobile-edit" src="../../assets/images/ic_edit_white.png" alt="edit">
@@ -108,6 +120,7 @@ export default {
             </div>
         </div>
 
+        <!-- House details section -->
         <div class="mid">
             <div class="house">
                 <div class="image">
@@ -123,9 +136,10 @@ export default {
                             <div class="deletebutton" @click="deletePopup(house.id)">
                                 <img class="delete" src="../../assets/images/ic_delete.png" alt="delete">
                             </div>
-
                         </div>
                     </div>
+
+                    <!-- Location, price, and size details -->
                     <div class="details">
                         <div class="postalcode">
                             <img src="../../assets/images/ic_location.png" alt="location" class="postalcodeimage">
@@ -139,6 +153,8 @@ export default {
                             <img src="../../assets/images/ic_construction_date.png" alt="built" class="builtimage">
                             <a class="builttext">Built in {{ house.constructionYear }}</a>
                         </div>
+
+                        <!-- Bedrooms, bathrooms, and garage details -->
                         <div class="info">
                             <img src="../../assets/images/ic_bed.png" alt="bed" class="bedimage">
                             <a class="bedtext">{{ house.rooms.bedrooms }}</a>
@@ -148,12 +164,13 @@ export default {
                             <a class="garagetext">{{ house.hasGarage ? 'Yes' : 'No' }}</a>
                         </div>
                         <div class="text">
-                            <a class=infotext>{{ house.description }}</a>
+                            <a class="infotext">{{ house.description }}</a>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Recommended houses section -->
             <div class="recommended">
                 <a class="recommendedtext">Recommended for you</a>
                 <div v-for="house in recommendedHouses.slice(0, 3)" :key="house.id">
@@ -174,7 +191,7 @@ export default {
 
                                 <div class="smalldetails">
                                     <img src="../../assets/images/ic_bed.png" alt="bed" class="smallbedimage">
-                                    <a class="smallbedtext">{{ house.rooms.bedromms }}</a>
+                                    <a class="smallbedtext">{{ house.rooms.bedrooms }}</a>
                                     <img src="../../assets/images/ic_bath.png" alt="bath" class="smallbathimage">
                                     <a class="smallbathtext">{{ house.rooms.bathrooms }}</a>
                                     <img src="../../assets/images/ic_size.png" alt="size" class="smallsizeimage">
@@ -183,13 +200,12 @@ export default {
                             </div>
                         </div>
                     </router-link>
-
                 </div>
             </div>
-
         </div>
     </div>
 </template>
+
 
 <style scoped>
 .wrapper {

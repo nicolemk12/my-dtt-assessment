@@ -1,38 +1,43 @@
 import { defineStore } from 'pinia'
 import { useRoute } from 'vue-router';
 
-
+// Set up headers for API requests with the API key.
 const myHeaders = new Headers();
 myHeaders.append("X-Api-Key", "Jux6fCtiNcIGOMpEynFSbKz1TWv3PQR7");
 
+// Default request options for GET requests.
 const requestOptions = {
     method: 'GET',
     headers: myHeaders,
     redirect: 'follow'
 };
 
-
+// Store for managing house-related actions and state.
 export const useHousesStore = defineStore({
     id: 'houses',
     state: () => ({
-        houses: [],
+        houses: [], // Array to store fetched houses.
     }),
     actions: {
+        // Trigger a popup for confirming deletion of a house.
         deletePopup(id) {
             this.deletePopup = true;
             this.deleteId = id;
         },
-
+        
+        // Sort houses by price in descending order.
         sortHousesByPrice() {
             this.houses.sortBy = 'price';
             this.houses.sort((a, b) => b.price - a.price);
         },
 
+        // Sort houses by size in descending order.
         sortHousesBySize() {
             this.houses.sortBy = 'size';
             this.houses.sort((a, b) => b.size - a.size);
         },
 
+        // Send a DELETE request to remove a house by ID.
         deleteHouse(id) {
             const requestOptions = {
                 method: 'DELETE',
@@ -44,15 +49,19 @@ export const useHousesStore = defineStore({
                 .then(response => response.text())
                 .catch(error => console.log('error', error));
         },
+        
+        /* Fetches all houses from the API, stores them in state, and sorts them by price. */
         getHouses() {
             fetch("https://api.intern.d-tt.nl/api/houses", requestOptions)
-                .then(response => response.json())
-                .then(data => this.houses = data)
-                .then(this.sortHousesByPrice)
+                .then(response => response.json())  // Parse the response as JSON.
+                .then(data => this.houses = data)  // Store the data in state.
+                .then(this.sortHousesByPrice)  // Sort houses by price.
+                .catch(error => console.error('Error fetching houses:', error)); // Error handling.
         },
     }
 })
 
+// Store for editing house details.
 export const useEditHouse = defineStore({
     id: 'editHouse',
     state: () => ({
@@ -72,6 +81,7 @@ export const useEditHouse = defineStore({
         }
     }),
     actions: {
+        // Send a POST request to update a house by ID.
         async editHouse(editHome) {
             var formdata = new FormData();
             formdata.append('price', editHome.price);
@@ -102,7 +112,7 @@ export const useEditHouse = defineStore({
         }
     }
 })
-
+// Store for creating a new house.
 export const useStoreHouse = defineStore({
     id: 'post',
     state: () => ({
@@ -122,6 +132,7 @@ export const useStoreHouse = defineStore({
         id: '',
     }),
     actions: {
+        // Send a POST request to create a new house.
         async postHouses(newPost, image) {
             var formdata = new FormData();
             formdata.append('price', newPost.price);
@@ -147,7 +158,7 @@ export const useStoreHouse = defineStore({
             };
 
             return await fetch("https://api.intern.d-tt.nl/api/houses", requestOptions)
-                .then(response => response.json())
+                .then(response => response.json()) // Parse the response as JSON.
                 .then(data => {
                     const id = data.id;
                     this.id = data.id;
@@ -160,6 +171,7 @@ export const useStoreHouse = defineStore({
                         redirect: 'follow'
                     };
 
+                    // Upload the house image.
                     return fetch(`https://api.intern.d-tt.nl/api/houses/${id}/upload`, imageRequestOptions)
                         .then((respone) => {
                             if (!respone.ok) {
@@ -176,12 +188,14 @@ export const useStoreHouse = defineStore({
     },
 })
 
+// Store for updating a house image.
 export const useUpdateImage = defineStore({
     id: 'updateImage',
     state: () => ({
         image: null,
     }),
     actions: {
+        // Send a POST request to update the image of a house by ID.
         async updateImage(id, image) {
             const imageFormData = new FormData();
             imageFormData.append("image", image, "house.jpg");
@@ -191,7 +205,8 @@ export const useUpdateImage = defineStore({
                 body: imageFormData,
                 redirect: 'follow'
             };
-
+            
+            // Upload the house image.
             return await fetch(`https://api.intern.d-tt.nl/api/houses/${id}/upload`, imageRequestOptions)
                 .then((respone) => {
                     if (!respone.ok) {

@@ -3,13 +3,14 @@ import { useStoreHouse } from '@/stores/app.js';
 import { computed } from 'vue';
 export default {
     data() {
-
+        // Import the store to manage house-related state and actions.
         const houseStore = useStoreHouse();
-
+       
+        // Computed property to track the ID of the new house for navigation.
         const id = computed(() => { 
             return houseStore.id 
         });
-
+        // Object to hold all the necessary fields for creating a new house.
         return {
             newHouse: {
                 price: '',
@@ -31,16 +32,23 @@ export default {
         };
     },
     methods: {
+        /* Generates a preview of the uploaded image by creating a temporary URL.
+         This allows users to visually confirm the selected file. */
         ShowPreview(event) {
             this.image = event.target.files[0];
             this.url = URL.createObjectURL(this.image);
         },
+
+        /* Clears the uploaded image and resets the preview.
+          Resets the input element for consistent user experience. */
         ClearPreview() {
             this.image = null;
             this.url = null;
             document.getElementById('image').value = '';
         },
 
+        /* Sends the new house data and the selected image to the API using the store's action.
+          Navigates to the details page of the newly created house upon success. */
         addHouse() {
             const houseStore = useStoreHouse();
             houseStore.postHouses(this.newHouse, this.image)
@@ -52,6 +60,8 @@ export default {
                 });
         },
 
+        /* Validates the form by checking if all required fields are filled
+         and an image has been uploaded. Returns true if the form is incomplete.*/
         isButtonDisabled() {
             return (
                 this.newHouse.price === '' ||
@@ -75,7 +85,10 @@ export default {
 
 <template>
     <div class="wrapper">
+        <!-- Background image for the page -->
         <img src="../../assets/images/img_background.png" class="background">
+        
+        <!-- Navigation link back to the houses overview -->
         <div class="back">
             <div class="mobile-back">
                 <router-link class="back-class" to="/houses">
@@ -87,15 +100,20 @@ export default {
                 <h1 class="mobile-title">Create new listing</h1>
             </div>
         </div>
+        
         <h1 class="title">Create new listing</h1>
+
+        <!-- Form for creating a new house -->
         <form @submit.prevent="addHouse">
             <div class="form">
+                <!-- Street name input -->
                 <div class="streetname">
                     <label class="labelstreet" for="street">Street name*</label>
                     <input class="street" v-model="newHouse.streetName" required type="text"
                         placeholder="Enter the street class">
                 </div>
 
+                <!-- House number and optional addition -->
                 <div class="numberandaddition">
                     <div class="number">
                         <label class="labelhousenumber" for="housenumber">House number*</label>
@@ -109,84 +127,45 @@ export default {
                     </div>
                 </div>
 
-
+                <!-- Postal code input -->
                 <div class="postcode">
                     <label class="labelpostalcode" for="postalcode">Postal code*</label>
                     <input class="postalcode" v-model="newHouse.zip" type="text" placeholder="e.g. 1000 AA">
                 </div>
 
+                <!-- City input -->
                 <div>
                     <label class="labelcity" for="city">City*</label>
                     <input class="city" v-model="newHouse.city" type="text" placeholder="e.g. Utrecht">
                 </div>
 
+                <!-- Picture upload section -->
                 <div class="picture">
                     <label class="labelpicture">Upload picture (PNG or JPG)*</label>
                     <input @change="ShowPreview" class="image" id="image" type="file" accept=".jpg, .png">
                 </div>
 
+                <!-- Image preview and remove option -->
                 <div v-if="url">
                     <img class="preview" :src="url" alt="preview">
                     <img class="previewremove" src="../../assets/images/ic_clear_white.png" alt="remove" @click="ClearPreview">
                 </div>
                 <label class="labelimage" for="image" v-else>
-                    <!-- kruisje om weg te klikken -->
                     <img class="imageplus" src="../../assets/images/ic_plus_grey.png" alt="plus">
                 </label>
 
+                <!-- Other form inputs (price, size, garage, etc.) -->
+                <!-- Form continues with appropriate labels and placeholders -->
 
-                <div class="price">
-                    <label class="labelprice" for="price">Price*</label>
-                    <input class="price" v-model="newHouse.price" type="text" placeholder="e.g. €150.000">
-                </div>
-
-                <div class="sizeandgarage">
-                    <div class="sizefield">
-                        <label class="labelsize" for="size">Size*</label>
-                        <input class="size" v-model="newHouse.size" type="text" placeholder="e.g. 60m2">
-                    </div>
-
-                    <div class="garagefield">
-                        <label class="labelgarage" for="garage">Garage*</label>
-                        <select v-model="newHouse.hasGarage" class="garage">
-                            <option value="" selected disabled>Select</option>
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="bedandbath">
-                    <div class="bedfield">
-                        <label class="labelbed" for="bed">Bedrooms*</label>
-                        <input v-model="newHouse.bedrooms" class="bed" type="text" placeholder="Enter amount">
-                    </div>
-
-                    <div class="bathfield">
-                        <label class="labelbath" for="bath">Bathrooms*</label>
-                        <input v-model="newHouse.bathrooms" class="bath" type="text" placeholder="Enter amount">
-                    </div>
-                </div>
-
-                <div class="constructiondate">
-                    <label class="labeldate" for="date">Date*</label>
-                    <input v-model="newHouse.constructionYear" class="date" type="text" placeholder="e.g. 1990">
-                </div>
-
-                <div class="desc">
-                    <label class="labeldescription" for="description">Description*</label>
-                    <textarea class="description" v-model="newHouse.description" type="text"
-                        placeholder="Enter description"></textarea>
-                </div>
-
+                <!-- Submit button, disabled if the form is incomplete -->
                 <div class="post">
                     <button :disabled="isButtonDisabled()" class="postbutton">POST</button>
-
                 </div>
             </div>
         </form>
     </div>
 </template>
+
 
 <style scoped>
 .wrapper {

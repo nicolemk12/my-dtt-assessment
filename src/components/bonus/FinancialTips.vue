@@ -75,7 +75,7 @@ src/Pages/FinancialTips.vue
     margin: 0 auto;
     padding: 20px;
     width: 80%;
-    max-width: 1000px; /* Restrict the max width on larger screens */
+    max-width: 1000px; 
   }
   
   /* Back Button Styling */

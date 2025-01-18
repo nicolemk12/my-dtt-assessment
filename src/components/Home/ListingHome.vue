@@ -1,22 +1,28 @@
 <script>
-import { useHousesStore } from '@/stores/app.js';
+import { useHousesStore } from '@/stores/app.js'; 
 import { computed } from 'vue';
 import { searchQuery } from '@/components/Home/Houses.vue';
 
 export default {
     setup() {
-        const storeHouses = useHousesStore();
+        const storeHouses = useHousesStore(); // Initialize the house store.
+
+        // Fetches the list of houses from the API. 
         const getHouses = () => {
             storeHouses.getHouses();
         };
 
+        /* Deletes a house by ID using the store's delete action.
+         @param {string} id - The ID of the house to delete. */
         const deleteHouse = (id) => {
             storeHouses.deleteHouse(id);
         };
 
+        /* Filters the list of houses based on the current search query.
+         Matches against street name, city, postal code, price, or size. */
         const filteredHouses = computed(() => {
             if (!searchQuery.value) {
-                return storeHouses.houses;
+                return storeHouses.houses; // Return all houses if no search query.
             }
             const lowerCaseQuery = searchQuery.value.toLowerCase();
 
@@ -29,22 +35,28 @@ export default {
             );
         });
 
+        /* Opens a confirmation popup for deleting a house.
+          Executes the delete action if the user confirms.
+         @param {string} id - The ID of the house to delete. */
         const deletePopup = (id) => {
             const popup = document.getElementById('popup');
             popup.style.display = 'flex';
+
+            // Add event listener for the confirmation button.
             const yes = document.getElementById('yes');
             yes.addEventListener('click', () => {
-                deleteHouse(id);
-                popup.style.display = 'none';
+                deleteHouse(id); // Delete the house.
+                popup.style.display = 'none'; // Close the popup.
             });
+
+            // Add event listener for the cancel button.
             const no = document.getElementById('no');
             no.addEventListener('click', () => {
-                popup.style.display = 'none';
+                popup.style.display = 'none'; // Close the popup.
             });
         };
 
-
-
+        // Return variables and functions for use in the template.
         return {
             searchQuery,
             getHouses,
@@ -54,13 +66,16 @@ export default {
         };
     },
 
+    // Fetch houses when the component is created.
     created() {
         this.getHouses();
     }
 };
 </script>
+
 <template>
     <div class="wrapper">
+        <!-- Delete confirmation popup -->
         <div class="popup" id="popup">
             <div class="popup-content">
                 <a class="headertext">Delete Listing</a>
@@ -72,16 +87,23 @@ export default {
                 </div>
             </div>
         </div>
+
+        <!-- Display total results when there is a search query -->
         <div class="total" v-if="searchQuery && filteredHouses.length">
             <a class="totaltext">{{ filteredHouses.length }} results found</a>
         </div>
+
+        <!-- Display a "no results" message if no houses match the search query -->
         <div class="noresult" v-if="filteredHouses.length === 0">
             <img class="noresultimg" src="@/assets/images/img_empty_houses.png" alt="no result">
             <a class="noresulttext">No results found.</a>
             <br>
             <a class="noresulttexttwo">Please try another keyword.</a>
         </div>
+
+        <!-- Render a list of filtered houses -->
         <div class="house" v-for="house in filteredHouses" :key="house.id">
+            <!-- Link to the house detail page -->
             <RouterLink class="housedetail" :to="`/houses/detail/${house.id}`">
                 <div class="houseimage">
                     <img class="houseimg" :src="`${house.image}`" alt="house">
@@ -100,6 +122,8 @@ export default {
                     </div>
                 </div>
             </RouterLink>
+
+            <!-- Edit and delete options for houses created by the current user -->
             <div class="edits" v-if="house.madeByMe">
                 <RouterLink class="edit" :to="`/edit-house/${house.id}`">
                     <img class="edit" src="@/assets/images/ic_edit.png" alt="edit">
@@ -111,6 +135,7 @@ export default {
         </div>
     </div>
 </template>
+
 
 <style scoped>
 .wrapper {

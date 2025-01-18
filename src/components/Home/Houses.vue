@@ -1,34 +1,44 @@
 <script>
-import { useHousesStore } from '@/stores/app.js';
-import { ref, computed } from 'vue';
+import { useHousesStore } from '@/stores/app.js'; // Import the store for managing house data.
+import { ref, computed } from 'vue'; // Import Vue's reactivity and computed property features.
 
-const searchQuery = ref('');
+const searchQuery = ref(''); // Reactive variable to store the search input.
 
-export { searchQuery }
-
+export { searchQuery }; // Export the searchQuery to make it accessible in other components.
 
 export default {
     setup() {
-        const activeButton = ref('price')
+        const activeButton = ref('price'); // Tracks the active sorting button ('price' or 'size').
 
+        /**
+         * Clears the current search input by resetting the searchQuery.
+         */
         function clearSearch() {
             searchQuery.value = '';
         }
 
+        /**
+         * Sorts houses by price in descending order and sets the active button to 'price'.
+         */
         function sortPrice() {
-            const storeHouses = useHousesStore();
-            activeButton.value = 'price';
-            return storeHouses.sortHousesByPrice();
+            const storeHouses = useHousesStore(); // Access the house store.
+            activeButton.value = 'price'; // Mark the price button as active.
+            return storeHouses.sortHousesByPrice(); // Trigger the sorting action in the store.
         }
 
+        /**
+         * Sorts houses by size in descending order and sets the active button to 'size'.
+         */
         function sortSize() {
             const storeHouses = useHousesStore();
-            activeButton.value = 'size';
-            return storeHouses.sortHousesBySize();
+            activeButton.value = 'size'; // Mark the size button as active.
+            return storeHouses.sortHousesBySize(); // Trigger the sorting action in the store.
         }
 
-        const isSizeActive = computed(() => activeButton.value === 'size')
+        // Computes whether the size button is currently active.
+        const isSizeActive = computed(() => activeButton.value === 'size');
 
+        // Return all reactive variables and functions for use in the template.
         return {
             searchQuery,
             clearSearch,
@@ -37,20 +47,25 @@ export default {
             isSizeActive,
             sortSize,
         };
-    }
+    },
 };
 </script>
 
 <template>
     <div class="wrapper">
+        <!-- Top section containing title and create house buttons -->
         <div class="top">
             <h1 class="title">Houses</h1>
+            
+            <!-- Button to create a new house (desktop view) -->
             <div class="create">
                 <RouterLink class="create-house" to="/create-house">
                     <img class="plus" src="@/assets/images/plus_white.png">
                     CREATE NEW
                 </RouterLink>
             </div>
+
+            <!-- Button to create a new house (mobile view) -->
             <div class="mobile-create">
                 <RouterLink class="create-house-mobile" to="/create-house">
                     <img class="plus-mobile" src="@/assets/images/ic_plus_grey.png">
@@ -58,22 +73,44 @@ export default {
             </div>
         </div>
     </div>
+
     <div class="mid">
+        <!-- Search bar for filtering houses -->
         <div class="searchbar">
             <img class="searchmagnifier" src="@/assets/images/ic_search.png" alt="search magnifier">
             <input class="search" type="text" placeholder="Search for a house" v-model="searchQuery" />
-            <img src="@/assets/images/ic_clear.png" v-if="searchQuery" alt="cancel" class="clearsearch" @click="clearSearch()">
+            <img 
+                src="@/assets/images/ic_clear.png" 
+                v-if="searchQuery" 
+                alt="cancel" 
+                class="clearsearch" 
+                @click="clearSearch()" 
+            />
         </div>
+
+        <!-- Sorting buttons for price and size -->
         <div class="doubleButtons">
-            <div :class="{ active: activeButton === 'price', red: isSizeActive }" @click="sortPrice()" class="button1">
+            <!-- Button for sorting by price -->
+            <div 
+                :class="{ active: activeButton === 'price', red: isSizeActive }" 
+                @click="sortPrice()" 
+                class="button1"
+            >
                 <button class="price">Price</button>
             </div>
-            <div :class="{ active: activeButton === 'size' }" @click="sortSize()" class="button2">
+            
+            <!-- Button for sorting by size -->
+            <div 
+                :class="{ active: activeButton === 'size' }" 
+                @click="sortSize()" 
+                class="button2"
+            >
                 <button class="size">Size</button>
             </div>
         </div>
     </div>
 </template>
+
 
 <style scoped>
 body,
