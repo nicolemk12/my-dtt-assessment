@@ -25,6 +25,7 @@ const router = createRouter({
       path: "/houses/detail/:id",
       name: "detail",
       component: DetailView,
+      props: true, // Pass the `id` as a prop to the component
     },
     {
       path: "/create-house",

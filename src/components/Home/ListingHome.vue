@@ -5,7 +5,7 @@ import { searchQuery } from '@/components/Home/Houses.vue';
 
 export default {
     setup() {
-        const storeHouses = useHousesStore(); // Initialize the house store.
+        const storeHouses = useHousesStore(); // Initialize the house store. 
 
         // Fetches the list of houses from the API. 
         const getHouses = () => {

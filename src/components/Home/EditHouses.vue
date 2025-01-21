@@ -1,42 +1,25 @@
 <script>
-import { useEditHouse, useHousesStore, useUpdateImage } from '@/stores/app.js'; 
+import { useHousesStore, useEditHouse, useUpdateImage } from '@/stores/app.js'; // Ensure all stores are imported
 import { useRoute } from 'vue-router'; 
-import { computed } from 'vue'; 
+import { computed } from 'vue';
 
 export default {
     data() {
-        const storeHouses = useHousesStore(); // Initialize the store for managing house data.
-        const router = useRoute(); // Access the current route.
-        const id = router.params.id; // Extract the house ID from the route parameters.
+        const storeHouses = useHousesStore();
+        const router = useRoute();
+        const id = router.params.id;
 
-        // Fetch all houses from the API.
         const getHouses = () => {
             storeHouses.getHouses();
         };
 
-        // Find the house to edit based on the current ID.
         const house = computed(() => {
             return storeHouses.houses.find(house => house.id.toString() === id.toString());
         });
 
-        // Extract the numeric portion of the street name.
-        const numbers = computed(() => {
-            const regex = /\d+/g;
-            const matches = house.value.location.street.match(regex);
-            return matches ? matches.join(' ') : null;
-        });
-
-        // Extract the non-numeric portion of the street name.
-        var street = computed(() => {
-            const regex = /[^\d]+/g;
-            const matches = house.value.location.street.match(regex);
-            return matches ? matches.join(' ') : null;
-        });
-
-        // Return reactive data for editing a house.
         return {
             house,
-            editHome: { // Stores the details of the house being edited.
+            editHome: {
                 price: '',
                 bedrooms: '',
                 bathrooms: '',
@@ -45,93 +28,42 @@ export default {
                 houseNumber: '',
                 city: '',
                 zip: '',
+                description: '',
                 numberAddition: '',
                 constructionYear: '',
                 hasGarage: '',
-                description: '',
                 id: '',
             },
-            image: null, // Stores the uploaded image.
-            url: null, // Stores the preview URL of the uploaded image.
+            image: null,
+            url: null,
             getHouses,
-            numbers,
-            street,
         };
     },
-
     methods: {
-        /* Generates a preview of the uploaded image.
-         Updates the house's image URL for preview purposes.
-         @param {Event} event - The input event containing the uploaded file. */
-        ShowPreview(event) {
-            this.image = event.target.files[0];
-            this.url = URL.createObjectURL(this.image);
-            this.house.image = this.url;
-        },
-
-        /* Clears the image preview and resets the input field. */
-        ClearPreview() {
-            this.image = null;
-            this.house.image = null;
-            this.url = null;
-            document.getElementById('image').value = ''; // Reset the file input.
-        },
-
-        /* Submits the edited house data to the API.
-         Updates the house details and optionally uploads a new image. */
-        addHouse() {
+        async addHouse() {
             const id = this.$route.params.id;
+            const houseEdit = useEditHouse(); // Initialize the store
 
-            // Edit house details without changing the image.
-            if (!this.image) {
-                const houseEdit = useEditHouse();
-                houseEdit.editHouse(this.editHome)
-                    .then(() => {
-                        this.$router.push(`/houses/detail/${id}`); // Navigate to the house details page.
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            } else {
-                // Edit house details and upload a new image.
-                const houseEdit = useEditHouse();
-                const updateImage = useUpdateImage();
-                houseEdit.editHouse(this.editHome)
-                    .then(() => {
-                        this.$router.push(`/houses/detail/${id}`);
-                    })
-                    .then(() => {
-                        updateImage.updateImage(id, this.image); // Upload the new image.
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+            try {
+                await houseEdit.editHouse(this.editHome);
+
+                if (this.image) {
+                    const updateImage = useUpdateImage();
+                    await updateImage.updateImage(id, this.image);
+                }
+
+                this.$router.push(`/houses/detail/${id}`);
+            } catch (error) {
+                console.error('Error editing house:', error);
             }
         },
     },
-
-    // Fetches all houses when the component is created.
     created() {
         this.getHouses();
     },
-
-    // Initializes the edit form fields when the component is mounted.
     mounted() {
-        this.editHome.price = this.house.price;
-        this.editHome.bedrooms = this.house.rooms.bedrooms;
-        this.editHome.bathrooms = this.house.rooms.bathrooms;
-        this.editHome.size = this.house.size;
-        this.editHome.streetName = this.street;
-        this.editHome.houseNumber = this.numbers;
-        this.editHome.city = this.house.location.city;
-        this.editHome.zip = this.house.location.zip;
-        this.editHome.constructionYear = this.house.constructionYear;
-        this.editHome.hasGarage = this.house.hasGarage ? 'yes' : 'no';
-        this.editHome.description = this.house.description;
-        this.url = this.house.image;
-        this.editHome.id = this.house.id;
-        if (this.house.numberAddition) {
-            this.editHome.numberAddition = this.house.location.numberAddition;
+        if (this.house) {
+            this.editHome = { ...this.house };
         }
     },
 };
@@ -203,10 +135,47 @@ export default {
                 <label class="labelimage" for="image" v-else>
                     <img class="imageplus" src="../../assets/images/ic_plus_grey.png" alt="plus">
                 </label>
+                <div class="price">
+                    <label class="labelprice" for="price">Price*</label>
+                    <input class="price" type="text" v-model="editHome.price" placeholder="e.g. €150.000">
+                </div>
 
-                <!-- Price, size, garage, bedrooms, and bathrooms inputs -->
-                <!-- Other form fields follow similar patterns -->
+                <div class="sizeandgarage">
+                    <div class="sizefield">
+                        <label class="labelsize" for="size">Size*</label>
+                        <input class="size" type="text" v-model="editHome.size" placeholder="e.g. 60m2">
+                    </div>
 
+                    <div class="garagefield">
+                        <label class="labelgarage" for="garage">Garage*</label>
+                        <select v-model="editHome.hasGarage" class="garage">
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bedandbath">
+                    <div class="bedfield">
+                        <label class="labelbed" for="bed">Bedrooms*</label>
+                        <input v-model="editHome.bedrooms" class="bed" type="text" placeholder="Enter amount">
+                    </div>
+                    <div class="bathfield">
+                        <label class="labelbath" for="bath">Bathrooms*</label>
+                        <input v-model="editHome.bathrooms" class="bath" type="text" placeholder="Enter amount">
+                    </div>
+                </div>
+
+                <div class="constructiondate">
+                    <label class="labeldate" for="date">Date*</label>
+                    <input v-model="editHome.constructionYear" class="date" type="text" placeholder="e.g. 1990">
+                </div>
+
+                <div class="desc">
+                    <label class="labeldescription" for="description">Description*</label>
+                    <textarea v-model="editHome.description" class="description" type="text"
+                        placeholder="Enter description"></textarea>
+                </div>
                 <!-- Submit button -->
                 <div class="post">
                     <button class="postbutton">SAVE</button>

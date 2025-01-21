@@ -1,17 +1,18 @@
 <script>
-import { useStoreHouse } from '@/stores/app.js';
+import { useHousesStore } from '@/stores/app.js'; // Ensure this matches the store export
 import { computed } from 'vue';
+
 export default {
     data() {
-        // Import the store to manage house-related state and actions.
-        const houseStore = useStoreHouse();
-       
-        // Computed property to track the ID of the new house for navigation.
-        const id = computed(() => { 
-            return houseStore.id 
-        });
-        // Object to hold all the necessary fields for creating a new house.
+        // Initialize the store
+        const houseStore = useHousesStore();
+
+        // Computed property to track the ID of the new house for navigation
+        const id = computed(() => houseStore.id);
+
+        // Object to hold all the necessary fields for creating a new house
         return {
+            houseStore, // Make houseStore accessible throughout the component
             newHouse: {
                 price: '',
                 bedrooms: '',
@@ -32,36 +33,52 @@ export default {
         };
     },
     methods: {
-        /* Generates a preview of the uploaded image by creating a temporary URL.
-         This allows users to visually confirm the selected file. */
+        /**
+         * Generates a preview of the uploaded image by creating a temporary URL.
+         * Allows users to visually confirm the selected file.
+         */
         ShowPreview(event) {
             this.image = event.target.files[0];
             this.url = URL.createObjectURL(this.image);
         },
 
-        /* Clears the uploaded image and resets the preview.
-          Resets the input element for consistent user experience. */
+        /**
+         * Clears the uploaded image and resets the preview.
+         * Resets the input element for consistent user experience.
+         */
         ClearPreview() {
             this.image = null;
             this.url = null;
             document.getElementById('image').value = '';
         },
 
-        /* Sends the new house data and the selected image to the API using the store's action.
-          Navigates to the details page of the newly created house upon success. */
-        addHouse() {
-            const houseStore = useStoreHouse();
-            houseStore.postHouses(this.newHouse, this.image)
-                .then(() => {
-                    this.$router.push(`/houses/detail/${this.id}`);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+        /**
+         * Sends the new house data and the selected image to the API using the store's action.
+         * Navigates to the details page of the newly created house upon success.
+         */
+        async addHouse() {
+            try {
+                // Call the store's postHouses action
+                await this.houseStore.postHouses(this.newHouse, this.image);
+
+                // Check if a valid house ID was returned
+                if (!this.houseStore.id) {
+                    console.error("House ID is undefined. Redirecting to /houses.");
+                    this.$router.push('/houses'); // Fallback if `id` is missing
+                    return;
+                }
+
+                // Navigate to the house detail page
+                this.$router.push(`/houses/detail/${this.houseStore.id}`);
+            } catch (error) {
+                console.error("Error creating house:", error); // Log any errors
+            }
         },
 
-        /* Validates the form by checking if all required fields are filled
-         and an image has been uploaded. Returns true if the form is incomplete.*/
+        /**
+         * Validates the form by checking if all required fields are filled
+         * and an image has been uploaded. Returns true if the form is incomplete.
+         */
         isButtonDisabled() {
             return (
                 this.newHouse.price === '' ||
@@ -79,9 +96,9 @@ export default {
             );
         },
     },
-}
-
+};
 </script>
+
 
 <template>
     <div class="wrapper">
@@ -153,9 +170,48 @@ export default {
                 <label class="labelimage" for="image" v-else>
                     <img class="imageplus" src="../../assets/images/ic_plus_grey.png" alt="plus">
                 </label>
+                <div class="price">
+                    <label class="labelprice" for="price">Price*</label>
+                    <input class="price" v-model="newHouse.price" type="text" placeholder="e.g. €150.000">
+                </div>
 
-                <!-- Other form inputs (price, size, garage, etc.) -->
-                <!-- Form continues with appropriate labels and placeholders -->
+                <div class="sizeandgarage">
+                    <div class="sizefield">
+                        <label class="labelsize" for="size">Size*</label>
+                        <input class="size" v-model="newHouse.size" type="text" placeholder="e.g. 60m2">
+                    </div>
+
+                    <div class="garagefield">
+                        <label class="labelgarage" for="garage">Garage*</label>
+                        <select v-model="newHouse.hasGarage" class="garage">
+                            <option value="" selected disabled>Select</option>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bedandbath">
+                    <div class="bedfield">
+                        <label class="labelbed" for="bed">Bedrooms*</label>
+                        <input v-model="newHouse.bedrooms" class="bed" type="text" placeholder="Enter amount">
+                    </div>
+
+                    <div class="bathfield">
+                        <label class="labelbath" for="bath">Bathrooms*</label>
+                        <input v-model="newHouse.bathrooms" class="bath" type="text" placeholder="Enter amount">
+                    </div>
+                </div>
+                <div class="constructiondate">
+                    <label class="labeldate" for="date">Date*</label>
+                    <input v-model="newHouse.constructionYear" class="date" type="text" placeholder="e.g. 1990">
+                </div>
+
+                <div class="desc">
+                    <label class="labeldescription" for="description">Description*</label>
+                    <textarea class="description" v-model="newHouse.description" type="text"
+                        placeholder="Enter description"></textarea>
+                </div>
 
                 <!-- Submit button, disabled if the form is incomplete -->
                 <div class="post">

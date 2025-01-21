@@ -79,32 +79,18 @@ export default {
         <div class="searchbar">
             <img class="searchmagnifier" src="@/assets/images/ic_search.png" alt="search magnifier">
             <input class="search" type="text" placeholder="Search for a house" v-model="searchQuery" />
-            <img 
-                src="@/assets/images/ic_clear.png" 
-                v-if="searchQuery" 
-                alt="cancel" 
-                class="clearsearch" 
-                @click="clearSearch()" 
-            />
+            <img src="@/assets/images/ic_clear.png" v-if="searchQuery" alt="cancel" class="clearsearch" @click="clearSearch()"/>
         </div>
 
         <!-- Sorting buttons for price and size -->
         <div class="doubleButtons">
             <!-- Button for sorting by price -->
-            <div 
-                :class="{ active: activeButton === 'price', red: isSizeActive }" 
-                @click="sortPrice()" 
-                class="button1"
-            >
+            <div :class="{ active: activeButton === 'price', red: isSizeActive }" @click="sortPrice()" class="button1">
                 <button class="price">Price</button>
             </div>
             
             <!-- Button for sorting by size -->
-            <div 
-                :class="{ active: activeButton === 'size' }" 
-                @click="sortSize()" 
-                class="button2"
-            >
+            <div :class="{ active: activeButton === 'size' }" @click="sortSize()" class="button2">
                 <button class="size">Size</button>
             </div>
         </div>
