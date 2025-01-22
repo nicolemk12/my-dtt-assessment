@@ -69,7 +69,7 @@ src/Pages/FinancialTips.vue
   <style scoped>
   /* General Styling */
   .container {
-    font-family: 'Montserrat', 'Open Sans', sans-serif;
+    font-family: var(--font-family);
     display: flex;
     flex-direction: column;
     margin: 0 auto;
@@ -95,7 +95,7 @@ src/Pages/FinancialTips.vue
   .back-text {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--primary-text);
     margin-left: 10px;
     text-decoration: none;
   }
@@ -103,7 +103,7 @@ src/Pages/FinancialTips.vue
   /* Survey Link Styling */
   .survey-link {
     margin-top: 40px;
-    background-color: #fff;
+    background-color: var(--background2);
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -119,8 +119,8 @@ src/Pages/FinancialTips.vue
   #surveyLink {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
+    background-color: var(--primary);
+    color: var(--vt-c-white);
     text-decoration: none;
     border-radius: 5px;
   }
@@ -131,7 +131,7 @@ src/Pages/FinancialTips.vue
   
   /* Financial Tips Section */
   .financial-tips {
-    background-color: #fff;
+    background-color: var(--background2);
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -157,7 +157,7 @@ src/Pages/FinancialTips.vue
   /* Footer Section */
   footer.credit {
     font-size: 0.9em;
-    color: #777;
+    color: var(--secondary-text);
     margin-top: 40px;
     text-align: center;
   }
@@ -179,9 +179,9 @@ src/Pages/FinancialTips.vue
     }
   
     .back-class {
-      transform: translateX(0); /* Center it left-leaning */
-      margin: 20px 20px 0 10px; /* Keep it close to the left */
-      max-width: none; /* Let it take the full width for mobile */
+      transform: translateX(0); 
+      margin: 20px 20px 0 10px; 
+      max-width: none; 
     }
   
     .survey-link, .financial-tips {

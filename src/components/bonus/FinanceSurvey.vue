@@ -127,10 +127,10 @@
     max-width: 600px;
     margin: 80px auto;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--tertiary2);
     border-radius: 5px;
-    background-color: #ffff;
-    padding-bottom: 180px; /* Ensure enough space for the fixed navbar */
+    background-color: var(--background2);
+    padding-bottom: 180px; 
   }
   /* Feedback styles */
   .feedback {
@@ -146,30 +146,30 @@
   }
 
   .recommend-feedback {
-    background-color: #fff3cd;
-    color: #856404;
+    background-color: var(--tertiary); 
+    color: var(--secondary-text);
   }
 
   /* Ensure the form is scrollable */
   body {
     overflow-y: auto;
-    margin-bottom: 100px; /* Provide space at the bottom */
+    margin-bottom: 100px; 
   }
 
   /* Mobile-specific adjustments */
   @media (max-width: 600px) {
     .back-class {
-      transform: translateX(0); /* Center it left-leaning */
-      margin: 20px 20px 0 10px; /* Keep it close to the left */
-      max-width: none; /* Let it take the full width for mobile */
+      transform: translateX(0); 
+      margin: 20px 20px 0 10px; 
+      max-width: none;
     }
 
     .back-text {
       font-size: 14px;
-      margin-left: 8px; /* Adjust text spacing */
+      margin-left: 8px; 
     }
     .survey-form {
-      padding-bottom: 200px; /* Add more space for mobile */
+      padding-bottom: 200px; 
     }
   }
 </style>

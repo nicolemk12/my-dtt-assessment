@@ -132,7 +132,7 @@ export default {
   <style scoped>
   /* Add your custom styles here */
   .container {
-    font-family: Montserrat,Open Sans Regular ;
+    font-family: var(--font-family);
     display: flex;
     flex-direction: column;
     width: 70%;
@@ -143,27 +143,27 @@ export default {
   }
   
   h1 {
-    font-family: Montserrat, Bold;
+    font-family: var(--font-family);
     font-size: 32px;
     margin-bottom: 10px;
   }
   
   p {
-    font-family: Open Sans Regular;
+    font-family: var(--font-family-secondary);
     font-size: 18px;
     margin-bottom: 20px;
   }
   
   .tip {
-    margin-bottom: 20px; /* Adjust the value to control the separation */
+    margin-bottom: 20px; 
   }
 
   .image-container {
-     display: flex; /* or use any desired display */
+     display: flex; 
      justify-content: center;
-     width: 100%; /* You may adjust according to your layout needs */
+     width: 100%; 
      padding: 20px;
-     /* Remove absolute positioning properties */
+     
    }
 
    .image-container img {
@@ -210,10 +210,9 @@ export default {
   }
   
   footer.credit a {
-    color: #0066cc;
+    color: var(--hyperlink);
   }
 
-  
   /* Mobile Styles */
 @media screen and (max-width: 750px) {
   .container {
@@ -222,10 +221,13 @@ export default {
   }
 
   h1 {
+    font-family: var(--font-family);
+    font-weight: bold;
     display: flex;
     justify-content: center;
     font-size: 28px;
-  }
+    margin-top: 5px;
+}
 
   p {
     font-size: 12px;
